@@ -31,6 +31,9 @@ if __name__ == "__main__":
     commit_B = ''
     bocArray = {}
     if(args.mode == 'tag'):
+        csvPath = args.absolutePath +"results/" +args.projectName + "-results-processMetrics.csv"
+        f = open(csvPath, "w")
+        writer = csv.writer(f)   
         for tag in tags:
            
             hashCurrent = pathB.get_commit_from_tag(tag.name).hash
@@ -40,15 +43,15 @@ if __name__ == "__main__":
             filesA = pathA.files()
             filesA = [x for x in filesA if x.endswith('.java')]
             
-            csvPath = args.absolutePath + args.projectName + "-results-processMetrics.csv"
-                     
+           
+                
             if(release ==1):
                 commit_A = tag
-                f = open(csvPath, "w")
-                writer = csv.writer(f)
                 row = ['project', 'commit', 'commitprevious', 'class','BOC','TACH','FCH', 'LCH','CHO','FRCH','CHD','WCD' ,'WFR','ATAF','LCA','LCD','CSB','CSBS','ACDF']
+                for file in filesA:
+                    if(file not in bocArray):
+                        bocArray[file] = release
                 writer.writerow(row)
-                f.close()
             else:
                 project = args.projectName
                 commit = hashCurrent
@@ -73,12 +76,13 @@ if __name__ == "__main__":
                 filesB = [x for x in filesB if x.endswith('.java')]
                 for file in filesA:
                     if(file not in bocArray):
-                        bocClass = {file,release}
-                        bocArray.append(bocClass)
+                        bocArray[file] = release
                         boc = release
                     else:
                         boc = bocArray.get(file)
                     row = [args.projectName, hashCurrent, hashPrevious, file,boc,'TACH','FCH', 'LCH','CHO','FRCH','CHD','WCD' ,'WFR','ATAF','LCA','LCD','CSB','CSBS','ACDF']
+                    writer.writerow(row)
 
             commit_A = tag
             release +=1
+        f.close()
