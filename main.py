@@ -1,12 +1,10 @@
 from asyncore import write
+from turtle import st
 import pydriller
 import argparse
 from csv import reader
 import csv
-
-import shutil
-import subprocess
-
+from pydriller import Repository
 import git
 
 if __name__ == "__main__":
@@ -69,7 +67,7 @@ if __name__ == "__main__":
                 lca = 0
                 csb = 0
                 csbs = 0
-                acdf = 0
+                acdf = 12
                 hashPrevious = pathA.get_commit_from_tag(commit_A.name).hash
                 pathB.checkout(hashPrevious)
                 filesB = pathB.files()
@@ -80,8 +78,19 @@ if __name__ == "__main__":
                         boc = release
                     else:
                         boc = bocArray.get(file)
-                    row = [args.projectName, hashCurrent, hashPrevious, file,boc,'TACH','FCH', 'LCH','CHO','FRCH','CHD','WCD' ,'WFR','ATAF','LCA','LCD','CSB','CSBS','ACDF']
-                    writer.writerow(row)
+                  
+                    commits_touching_path = Repository(args.pathA, from_commit=hashPrevious, to_commit=hashCurrent).traverse_commits()
+                    file_temp = file.replace(args.absolutePath+"projectA/"+args.projectName+"/", '')
+                    added_lines = 0
+                    removed_lines =0
+                    for cc in commits_touching_path:
+                        for m in cc.modified_files:
+                            if((m.new_path == file_temp or m.old_path == file_temp)):
+                                added_lines += m.added_lines
+                                removed_lines += m.deleted_lines
+                    tach = added_lines + removed_lines
+                    row = [args.projectName, hashCurrent, hashPrevious, file,boc,tach,'FCH', 'LCH','CHO','FRCH','CHD','WCD' ,'WFR','ATAF','LCA','LCD','CSB','CSBS','ACDF']
+                    #writer.writerow(row)
 
             commit_A = tag
             release +=1
