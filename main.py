@@ -1,5 +1,4 @@
 from asyncore import write
-from turtle import st
 import pydriller
 import argparse
 from csv import reader
