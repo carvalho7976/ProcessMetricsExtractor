@@ -77,7 +77,7 @@ if __name__ == "__main__":
                 lcd = 0
                 csb = 0
                 csbs = 0
-                acdf = 12
+                acdf = 0
                 hashPrevious = pathA.get_commit_from_tag(commit_A.name).hash
                 pathB.checkout(hashPrevious)
                 filesB = pathB.files()
